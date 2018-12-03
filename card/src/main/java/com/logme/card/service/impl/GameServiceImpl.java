@@ -1,6 +1,7 @@
 package com.logme.card.service.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +14,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.logme.card.dto.UserDTO;
+import com.logme.card.dto.PlayerResultDTO;
+import com.logme.card.dto.SuitCountDTO;
 import com.logme.card.entity.Card;
 import com.logme.card.entity.CardInfo;
 import com.logme.card.entity.Game;
@@ -30,7 +32,7 @@ public class GameServiceImpl implements GameService {
 	@Autowired
 	private GameRepository gameRepository;
 
-	private Map<Long, Game> games = new HashMap<>();
+	private final Map<Long, Game> games = new HashMap<>();
 
 	@Autowired
 	private PlayerService playerService;
@@ -41,12 +43,12 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public Optional<Game> createGame() {
 		final Game game = new Game();
-		return Optional.ofNullable(this.gameRepository.save(game));
+		return Optional.ofNullable(gameRepository.save(game));
 	}
 
 	@Override
-	public void shuffle(Long gameId) {
-		final Optional<Game> game = this.gameRepository.findById(gameId);
+	public void shuffle(final Long gameId) {
+		final Optional<Game> game = gameRepository.findById(gameId);
 		if (!game.isPresent()) {
 			return;
 		}
@@ -54,7 +56,7 @@ public class GameServiceImpl implements GameService {
 			final ArrayList<CardInfo> cards = new ArrayList<>();
 			game.get().getDecks().forEach(deck -> {
 				for (final Card card : deck.getCards()) {
-					final CardInfo cardInfo = new CardInfo(deck.getId(), card.getSuit(), card.getFace());
+					final CardInfo cardInfo = new CardInfo(card.getSuit(), card.getFace());
 					cards.add(cardInfo);
 				}
 			});
@@ -72,13 +74,13 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public void deleteGame(Long gameId) {
+	public void deleteGame(final Long gameId) {
 		gameRepository.deleteById(gameId);
 	}
 
 	@Override
-	public Optional<CardInfo> dealCard(Long gameId, String login) throws FunctionalException {
-		final Optional<Game> game = this.gameRepository.findById(gameId);
+	public Optional<CardInfo> dealCard(final Long gameId, final String login) throws FunctionalException {
+		final Optional<Game> game = gameRepository.findById(gameId);
 		if (!game.isPresent()) {
 			throw new FunctionalException("the game gameId {}  is not found", gameId);
 		}
@@ -86,31 +88,46 @@ public class GameServiceImpl implements GameService {
 			// We call shuffle
 			shuffle(gameId);
 		}
-		Queue<CardInfo> remainingCards = games.get(gameId).getCards();
+		final Queue<CardInfo> remainingCards = games.get(gameId).getCards();
 		if (null == remainingCards || remainingCards.isEmpty()) {
 			return Optional.empty();
 		}
-		CardInfo card = remainingCards.poll();
+		final CardInfo card = remainingCards.poll();
 		// We add the card to the player
 		playerService.addCard(login, card.getSuitEnum(), card.getFaceEnum());
-		// We remove the card from the deck
-		deckService.removeCard(card.getDeckId(), card.getSuitEnum(), card.getFaceEnum());
 		return Optional.ofNullable(card);
 	}
 
 	@Override
-	public List<UserDTO> getUsersByScoreDesc(Long gameId) throws FunctionalException{
-		final Optional<Game> game = this.gameRepository.findById(gameId);
+	public List<PlayerResultDTO> getUsersByScoreDesc(final Long gameId) throws FunctionalException {
+		final List<PlayerResultDTO> result = new ArrayList<>();
+		final Optional<Game> game = gameRepository.findById(gameId);
 		if (!game.isPresent()) {
 			throw new FunctionalException("the game gameId {}  is not found", gameId);
 		}
-		game.get().getPlayers().forEach(player->{
-			UserDTO userDTO=new UserDTO();
+		game.get().getPlayers().forEach(player -> {
+			final PlayerResultDTO userDTO = new PlayerResultDTO();
 			userDTO.setId(player.getId());
 			userDTO.setLogin(player.getLogin());
-//			userDTO.setScore((Long)(player.getCards().stream().mapToInt(c->c.getFace().getPoint()).sum())));
+			userDTO.setScore(player.getCards().stream().mapToInt(c -> c.getFace().getPoint()).sum());
+			result.add(userDTO);
 		});
-		return null;
+		result.sort(new Comparator<PlayerResultDTO>() {
+			@Override
+			public int compare(final PlayerResultDTO o1, final PlayerResultDTO o2) {
+				return o2.getScore() - o1.getScore();
+			}
+		});
+		return result;
+	}
+
+	@Override
+	public Optional<SuitCountDTO> getSuitCount(final Long gameId) throws FunctionalException {
+		final Game game = gameRepository.findById(gameId)
+				.orElseThrow(() -> new FunctionalException("The game is not found gameID ={} ", gameId));
+		final SuitCountDTO siCountDTO = new SuitCountDTO();
+		game.getCards().forEach(c -> siCountDTO.increment(c.getSuitEnum()));
+		return Optional.of(siCountDTO);
 	}
 
 }

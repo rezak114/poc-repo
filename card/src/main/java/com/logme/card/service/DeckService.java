@@ -13,5 +13,5 @@ public interface DeckService {
 
 	Optional<Deck> addDeck(Long deckId, Long gameId) throws FunctionalException;
 
-	void removeCard(Long deckId, SuitEnum suitEnum, FaceEnum faceEnum);
+	void removeCard(SuitEnum suitEnum, FaceEnum faceEnum);
 }

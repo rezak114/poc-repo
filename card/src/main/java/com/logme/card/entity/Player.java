@@ -36,13 +36,13 @@ public class Player {
 	 * @return the login
 	 */
 	public String getLogin() {
-		return this.login;
+		return login;
 	}
 
 	/**
 	 * @param login the login to set
 	 */
-	public void setLogin(String login) {
+	public void setLogin(final String login) {
 		this.login = login;
 	}
 
@@ -50,13 +50,13 @@ public class Player {
 	 * @return the game
 	 */
 	public Game getGame() {
-		return this.game;
+		return game;
 	}
 
 	/**
 	 * @param game the game to set
 	 */
-	public void setGame(Game game) {
+	public void setGame(final Game game) {
 		this.game = game;
 	}
 
@@ -64,13 +64,13 @@ public class Player {
 	 * @return the cards
 	 */
 	public Set<Card> getCards() {
-		return this.cards;
+		return cards;
 	}
 
 	/**
 	 * @param cards the cards to set
 	 */
-	public void setCards(Set<Card> cards) {
+	public void setCards(final Set<Card> cards) {
 		this.cards = cards;
 	}
 
@@ -78,7 +78,42 @@ public class Player {
 	 * @return the id
 	 */
 	public Long getId() {
-		return this.id;
+		return id;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (login == null ? 0 : login.hashCode());
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final Player other = (Player) obj;
+		if (login == null) {
+			if (other.login != null)
+				return false;
+		} else if (!login.equals(other.login))
+			return false;
+		return true;
 	}
 
 }

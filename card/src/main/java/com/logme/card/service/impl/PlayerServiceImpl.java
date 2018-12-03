@@ -1,14 +1,15 @@
 package com.logme.card.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.logme.card.entity.Card;
+import com.logme.card.entity.CardInfo;
 import com.logme.card.entity.Game;
 import com.logme.card.entity.Player;
 import com.logme.card.enums.FaceEnum;
@@ -24,7 +25,7 @@ public class PlayerServiceImpl implements PlayerService {
 
 	@Autowired
 	private PlayerRepository playerRepository;
-	
+
 	@Autowired
 	private CardRepository cardRepository;
 
@@ -32,78 +33,83 @@ public class PlayerServiceImpl implements PlayerService {
 	private GameRepository gameRepository;
 
 	@Override
-	public Optional<Player> addPlayer(Long gameId, String login) throws FunctionalException {
-		final Optional<Player> player = this.playerRepository.findByLogin(login);
+	public Optional<Player> addPlayer(final Long gameId, final String login) throws FunctionalException {
+		final Optional<Player> player = playerRepository.findByLogin(login);
 		if (player.isPresent()) {
 			throw new FunctionalException("The player with login ={} already exists", login);
 		}
-		final Optional<Game> game = this.gameRepository.findById(gameId);
+		final Optional<Game> game = gameRepository.findById(gameId);
 		if (!game.isPresent()) {
 			throw new FunctionalException("The game is not found gameID ={} ", gameId);
 		}
 		final Player playerNew = new Player();
 		playerNew.setGame(game.get());
 		playerNew.setLogin(login);
-		this.playerRepository.save(playerNew);
+		playerRepository.save(playerNew);
 		return Optional.ofNullable(playerNew);
 	}
 
 	@Override
-	public boolean removePlayer(Long gameId, Long playerId) throws FunctionalException {
-		boolean removed = false;
-		final Optional<Game> gameOp = this.gameRepository.findById(gameId);
-		if (null == gameId || null == playerId) {
+	public void removePlayer(final Long gameId, final String login) throws FunctionalException {
+		if (null == gameId || null == login) {
 			throw new FunctionalException("Missing parameter");
 		}
-		if (!gameOp.isPresent()) {
-			throw new FunctionalException("The game is not found gameID ={} ", gameId);
-		}
-		if (null == gameOp.get().getPlayers()) {
+		final Optional<Game> gameOp = gameRepository.findById(gameId);
+		final Game game = gameOp.orElseThrow(() -> new FunctionalException("The game is not found gameID ={} ", gameId));
+		if (null == game.getPlayers()) {
 			throw new FunctionalException("The game gameID ={}  doesn't containt playerId = {}", gameId);
 		}
-		final Game game = gameOp.get();
-		final Set<Player> players = game.getPlayers().stream().filter(currGame -> gameId.equals(currGame.getId()) == false).collect(Collectors.toSet());
-		if (players.size() < game.getPlayers().size()) {
-			game.setPlayers(players);
-			this.gameRepository.save(game);
-			removed = true;
-		}
-		return removed;
+		final Optional<Player> player = game.getPlayers().stream().filter(p -> p.getLogin().equals(login)).findFirst();
+
+		player.ifPresent(p -> {
+			game.getPlayers().remove(player.get());
+			player.get().getCards().forEach(c -> {
+				final CardInfo cardInfo = new CardInfo(c.getSuit(), c.getFace());
+				game.getCards().add(cardInfo);
+			});
+			gameRepository.save(game);
+		});
+
 	}
 
 	@Override
-	public Optional<Set<Card>> getCards(String login ) {
+	public Optional<List<CardInfo>> getCards(final String login) {
 		if (null == login) {
 			Optional.empty();
 		}
-		final Optional<Player> player = this.playerRepository.findByLogin(login);
+		final Optional<Player> player = playerRepository.findByLogin(login);
 		if (!player.isPresent()) {
 			Optional.empty();
 		}
-		return Optional.of(player.get().getCards());
+		final List<CardInfo> list = new ArrayList<CardInfo>();
+		player.get().getCards().forEach(c -> {
+			final CardInfo cardInfo = new CardInfo(c.getSuit(), c.getFace());
+			list.add(cardInfo);
+		});
+		return Optional.of(list);
 	}
 
 	@Override
-	public void removeCard(String login, SuitEnum suitEnum, FaceEnum faceEnum) {
-		final Optional<Player> player = this.playerRepository.findByLogin(login);
+	public void removeCard(final String login, final SuitEnum suitEnum, final FaceEnum faceEnum) {
+		final Optional<Player> player = playerRepository.findByLogin(login);
 		if (player.isPresent()) {
-			if(null!=player.get().getCards()) {
+			if (null != player.get().getCards()) {
 				player.get().getCards().remove(new Card(suitEnum, faceEnum));
-				this.playerRepository.save(player.get());
+				playerRepository.save(player.get());
 			}
 		}
-		
+
 	}
 
 	@Override
-	public boolean addCard(String login, SuitEnum suitEnum, FaceEnum faceEnum) {
-		final Optional<Player> player = this.playerRepository.findByLogin(login);
+	public boolean addCard(final String login, final SuitEnum suitEnum, final FaceEnum faceEnum) {
+		final Optional<Player> player = playerRepository.findByLogin(login);
 		if (player.isPresent()) {
-			if(null==player.get().getCards()) {
+			if (null == player.get().getCards()) {
 				player.get().setCards(new HashSet<>());
 			}
 			player.get().getCards().add(cardRepository.findBySuitAndFace(suitEnum, faceEnum).get());
-			this.playerRepository.save(player.get());
+			playerRepository.save(player.get());
 			return true;
 		}
 		return false;

@@ -5,32 +5,21 @@ import com.logme.card.enums.SuitEnum;
 
 public class CardInfo {
 
-	private Long deckId;
-
 	private SuitEnum suitEnum;
 
 	private FaceEnum faceEnum;
 
-	public CardInfo(Long deckId, SuitEnum suitEnum, FaceEnum faceEnum) {
+	public CardInfo(final SuitEnum suitEnum, final FaceEnum faceEnum) {
 		super();
-		this.deckId = deckId;
 		this.suitEnum = suitEnum;
 		this.faceEnum = faceEnum;
-	}
-
-	public Long getDeckId() {
-		return deckId;
-	}
-
-	public void setDeckId(Long deckId) {
-		this.deckId = deckId;
 	}
 
 	public SuitEnum getSuitEnum() {
 		return suitEnum;
 	}
 
-	public void setSuitEnum(SuitEnum suitEnum) {
+	public void setSuitEnum(final SuitEnum suitEnum) {
 		this.suitEnum = suitEnum;
 	}
 
@@ -38,34 +27,38 @@ public class CardInfo {
 		return faceEnum;
 	}
 
-	public void setFaceEnum(FaceEnum faceEnum) {
+	public void setFaceEnum(final FaceEnum faceEnum) {
 		this.faceEnum = faceEnum;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((deckId == null) ? 0 : deckId.hashCode());
-		result = prime * result + ((faceEnum == null) ? 0 : faceEnum.hashCode());
-		result = prime * result + ((suitEnum == null) ? 0 : suitEnum.hashCode());
+		result = prime * result + (faceEnum == null ? 0 : faceEnum.hashCode());
+		result = prime * result + (suitEnum == null ? 0 : suitEnum.hashCode());
 		return result;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CardInfo other = (CardInfo) obj;
-		if (deckId == null) {
-			if (other.deckId != null)
-				return false;
-		} else if (!deckId.equals(other.deckId))
-			return false;
+		final CardInfo other = (CardInfo) obj;
 		if (faceEnum != other.faceEnum)
 			return false;
 		if (suitEnum != other.suitEnum)

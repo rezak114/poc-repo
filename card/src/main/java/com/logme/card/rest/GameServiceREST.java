@@ -1,5 +1,6 @@
 package com.logme.card.rest;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.logme.card.dto.PlayerResultDTO;
+import com.logme.card.dto.SuitCountDTO;
 import com.logme.card.entity.CardInfo;
 import com.logme.card.entity.Game;
 import com.logme.card.service.GameService;
@@ -26,7 +29,7 @@ public class GameServiceREST {
 
 	@RequestMapping(value = "/games", method = RequestMethod.POST)
 	public ResponseEntity<Long> games() {
-		Optional<Game> game = gameService.createGame();
+		final Optional<Game> game = gameService.createGame();
 		if (!game.isPresent()) {
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}
@@ -34,11 +37,11 @@ public class GameServiceREST {
 	}
 
 	@RequestMapping(value = "/games/{gameId}", method = RequestMethod.DELETE)
-	public ResponseEntity<String> deleteGame(@PathVariable("gameId") long gameId) {
+	public ResponseEntity<String> deleteGame(@PathVariable("gameId") final long gameId) {
 		try {
 			gameService.deleteGame(gameId);
 			return new ResponseEntity<>("the game had been deleted", HttpStatus.ACCEPTED);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -46,26 +49,71 @@ public class GameServiceREST {
 	}
 
 	@RequestMapping(value = "/games/{gameId}/players/{login}", method = RequestMethod.POST)
-	public ResponseEntity<String> addPlayer(@PathVariable("gameId") long gameId, @PathVariable("login") String login) {
+	public ResponseEntity<String> addPlayer(@PathVariable("gameId") final long gameId, @PathVariable("login") final String login) {
 		try {
 			playerService.addPlayer(gameId, login);
-			return new ResponseEntity<>(
-					String.format("the player %s had been added to the game gameId = %s", login, gameId),
+			return new ResponseEntity<>(String.format("the player %s had been added to the game gameId = %s", login, gameId),
 					HttpStatus.ACCEPTED);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>("the player had not been added " + e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 
 	}
 
-	@RequestMapping(value = "/games/{gameId}/cards/players/{login}", method = RequestMethod.GET)
-	public ResponseEntity<CardInfo> dealCard(@PathVariable("gameId") long gameId, @PathVariable("login") String login) {
+	@RequestMapping(value = "/games/{gameId}/players/{login}", method = RequestMethod.DELETE)
+	public ResponseEntity<String> deletePlayer(@PathVariable("gameId") final long gameId, @PathVariable("login") final String login) {
 		try {
-			Optional<CardInfo> card = gameService.dealCard(gameId, login);
-			return new ResponseEntity<>(card.get(),
-					HttpStatus.ACCEPTED);
-		} catch (Exception e) {
+			playerService.removePlayer(gameId, login);
+			return new ResponseEntity<>("Player removed successfully", HttpStatus.ACCEPTED);
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("Error when removing player", HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	@RequestMapping(value = "/games/{gameId}/cards/players/{login}", method = RequestMethod.GET)
+	public ResponseEntity<CardInfo> dealCard(@PathVariable("gameId") final long gameId, @PathVariable("login") final String login) {
+		try {
+			final Optional<CardInfo> card = gameService.dealCard(gameId, login);
+			return new ResponseEntity<>(card.get(), HttpStatus.ACCEPTED);
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	@RequestMapping(value = "/games/{gameId}/players/sort", method = RequestMethod.GET)
+	public ResponseEntity<List<PlayerResultDTO>> dealCard(@PathVariable("gameId") final long gameId) {
+		try {
+			return new ResponseEntity<>(gameService.getUsersByScoreDesc(gameId), HttpStatus.ACCEPTED);
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	@RequestMapping(value = "/games/{gameId}/shuffle", method = RequestMethod.POST)
+	public ResponseEntity<String> shuffle(@PathVariable("gameId") final long gameId) {
+		try {
+			gameService.shuffle(gameId);
+			return new ResponseEntity<>("cards shuffled successfully", HttpStatus.ACCEPTED);
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>("error when shuffling cards", HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	@RequestMapping(value = "/games/{gameId}/suit", method = RequestMethod.GET)
+	public ResponseEntity<SuitCountDTO> getSuitCount(@PathVariable("gameId") final long gameId) {
+		try {
+			gameService.getSuitCount(gameId);
+			return new ResponseEntity<>(gameService.getSuitCount(gameId).get(), HttpStatus.ACCEPTED);
+		} catch (final Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}

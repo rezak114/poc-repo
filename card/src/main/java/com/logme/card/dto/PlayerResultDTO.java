@@ -1,15 +1,15 @@
 package com.logme.card.dto;
 
-public class UserDTO {
-	
+public class PlayerResultDTO {
+
 	private Long id;
-	
+
 	private String login;
-	
-	private Long score;
+
+	private Integer score;
 
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Long id) {
@@ -17,21 +17,19 @@ public class UserDTO {
 	}
 
 	public String getLogin() {
-		return login;
+		return this.login;
 	}
 
 	public void setLogin(String login) {
 		this.login = login;
 	}
 
-	public Long getScore() {
-		return score;
+	public Integer getScore() {
+		return this.score;
 	}
 
-	public void setScore(Long score) {
+	public void setScore(Integer score) {
 		this.score = score;
 	}
-	
-	
 
 }

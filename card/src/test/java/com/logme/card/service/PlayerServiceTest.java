@@ -32,34 +32,32 @@ public class PlayerServiceTest extends CardApplicationTests {
 
 	@Test(expected = FunctionalException.class)
 	public void testAddKO() throws FunctionalException {
-		this.playerService.addPlayer(100l, "rezak");
+		playerService.addPlayer(100l, "rezak");
 	}
 
 	@Test
 	public void testAddOK() throws FunctionalException {
-		final Optional<Player> player = this.playerService.addPlayer(100l, "rezakNotExist");
+		final Optional<Player> player = playerService.addPlayer(100l, "rezakNotExist");
 		Assertions.assertThat(player.isPresent());
 	}
 
 	// The game is not existing
 	@Test(expected = FunctionalException.class)
 	public void removePlayer() throws FunctionalException {
-		this.playerService.removePlayer(GAME_ID_NOT_EXISTING, PLAYER_ID);
+		playerService.removePlayer(GAME_ID_NOT_EXISTING, "rezak");
 	}
 
 	// The game is not existing
 	@Test(expected = FunctionalException.class)
 	public void removePlayerIdNullKO() throws FunctionalException {
-		this.playerService.removePlayer(GAME_ID_NOT_EXISTING, null);
+		playerService.removePlayer(GAME_ID_NOT_EXISTING, null);
 	}
 
 	@Test
 	public void removePlayerOK() throws FunctionalException {
-		final boolean removed = this.playerService.removePlayer(GAME_ID, PLAYER_ID);
-		Assertions.assertThat(removed).isTrue();
-
+		playerService.removePlayer(GAME_ID, "rezak");
 		// We check that the game is really updated
-		final Optional<Game> game = this.gameRepository.findById(GAME_ID);
+		final Optional<Game> game = gameRepository.findById(GAME_ID);
 		Assertions.assertThat(game.get().getPlayers()).isEmpty();
 	}
 }

@@ -1,6 +1,6 @@
 package com.logme.card.entity;
 
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
@@ -27,7 +27,7 @@ public class Game {
 	 * This is not persisted, contains all remaining cards.
 	 */
 	@Transient
-	private Queue<CardInfo> cards;
+	private Queue<CardInfo> cards = new LinkedList<>();
 
 	/**
 	 * @return the decks
