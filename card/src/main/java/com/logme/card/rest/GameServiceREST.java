@@ -77,7 +77,7 @@ public class GameServiceREST {
 	public ResponseEntity<CardInfo> dealCard(@PathVariable("gameId") final long gameId, @PathVariable("login") final String login) {
 		try {
 			final Optional<CardInfo> card = gameService.dealCard(gameId, login);
-			return new ResponseEntity<>(card.get(), HttpStatus.ACCEPTED);
+			return card.map(e -> new ResponseEntity<>(e, HttpStatus.ACCEPTED)).orElse(new ResponseEntity<>(null, HttpStatus.ACCEPTED));
 		} catch (final Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -86,9 +86,10 @@ public class GameServiceREST {
 	}
 
 	@RequestMapping(value = "/games/{gameId}/players/sort", method = RequestMethod.GET)
-	public ResponseEntity<List<PlayerResultDTO>> dealCard(@PathVariable("gameId") final long gameId) {
+	public ResponseEntity<List<PlayerResultDTO>> getUsersByScoreDesc(@PathVariable("gameId") final long gameId) {
 		try {
 			return new ResponseEntity<>(gameService.getUsersByScoreDesc(gameId), HttpStatus.ACCEPTED);
+
 		} catch (final Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

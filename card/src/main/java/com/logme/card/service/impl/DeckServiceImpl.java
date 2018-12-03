@@ -44,18 +44,18 @@ public class DeckServiceImpl implements DeckService {
 			throw new FunctionalException("Missing parameters to add deck");
 		}
 		final Optional<Deck> deck = deckRepository.findById(deckId);
-		final Optional<Game> game = gameRepository.findById(gameId);
-		if (!game.isPresent()) {
-			throw new FunctionalException("Game not found gameId= {}", gameId);
-		}
+		final Game game = gameRepository.findById(gameId)
+				.orElseThrow(() -> new FunctionalException("The game is not found gameID ={} ", gameId));
 		if (!deck.isPresent()) {
 			throw new FunctionalException("Deck not found deckId= {}", deckId);
 		}
 		if (null != deck.get().getGame()) {
 			return Optional.empty();
 		}
-		deck.get().setGame(game.get());
+		deck.get().setGame(game);
 		deckRepository.save(deck.get());
+		game.getCards().addAll(deck.get().getCards());
+		gameRepository.save(game);
 		return Optional.ofNullable(deck.get());
 	}
 

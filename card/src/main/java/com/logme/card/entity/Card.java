@@ -35,7 +35,7 @@ public class Card {
 		super();
 	}
 
-	public Card(SuitEnum suit, FaceEnum face) {
+	public Card(final SuitEnum suit, final FaceEnum face) {
 		super();
 		this.suit = suit;
 		this.face = face;
@@ -45,13 +45,13 @@ public class Card {
 	 * @return the suit
 	 */
 	public SuitEnum getSuit() {
-		return this.suit;
+		return suit;
 	}
 
 	/**
 	 * @param suit the suit to set
 	 */
-	public void setSuit(SuitEnum suit) {
+	public void setSuit(final SuitEnum suit) {
 		this.suit = suit;
 	}
 
@@ -59,13 +59,13 @@ public class Card {
 	 * @return the face
 	 */
 	public FaceEnum getFace() {
-		return this.face;
+		return face;
 	}
 
 	/**
 	 * @param face the face to set
 	 */
-	public void setFace(FaceEnum face) {
+	public void setFace(final FaceEnum face) {
 		this.face = face;
 	}
 
@@ -73,41 +73,32 @@ public class Card {
 	 * @return the id
 	 */
 	public Long getId() {
-		return this.id;
+		return id;
 	}
 
 	/**
 	 * @return the decks
 	 */
 	public Set<Deck> getDecks() {
-		return this.decks;
+		return decks;
 	}
 
 	/**
 	 * @param decks the decks to set
 	 */
-	public void setDecks(Set<Deck> decks) {
+	public void setDecks(final Set<Deck> decks) {
 		this.decks = decks;
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((face == null) ? 0 : face.hashCode());
-		result = prime * result + ((suit == null) ? 0 : suit.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Card other = (Card) obj;
+		final Card other = (Card) obj;
 		if (face != other.face)
 			return false;
 		if (suit != other.suit)

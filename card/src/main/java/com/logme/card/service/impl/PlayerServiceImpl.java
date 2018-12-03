@@ -64,8 +64,8 @@ public class PlayerServiceImpl implements PlayerService {
 		player.ifPresent(p -> {
 			game.getPlayers().remove(player.get());
 			player.get().getCards().forEach(c -> {
-				final CardInfo cardInfo = new CardInfo(c.getSuit(), c.getFace());
-				game.getCards().add(cardInfo);
+//				final CardInfo cardInfo = new CardInfo(c.getSuit(), c.getFace());
+				game.getCards().add(c);
 			});
 			gameRepository.save(game);
 		});
