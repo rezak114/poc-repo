@@ -3,6 +3,7 @@ package com.logme.card.service.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
@@ -12,6 +13,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.logme.card.dto.UserDTO;
 import com.logme.card.entity.Card;
 import com.logme.card.entity.CardInfo;
 import com.logme.card.entity.Game;
@@ -94,6 +96,21 @@ public class GameServiceImpl implements GameService {
 		// We remove the card from the deck
 		deckService.removeCard(card.getDeckId(), card.getSuitEnum(), card.getFaceEnum());
 		return Optional.ofNullable(card);
+	}
+
+	@Override
+	public List<UserDTO> getUsersByScoreDesc(Long gameId) throws FunctionalException{
+		final Optional<Game> game = this.gameRepository.findById(gameId);
+		if (!game.isPresent()) {
+			throw new FunctionalException("the game gameId {}  is not found", gameId);
+		}
+		game.get().getPlayers().forEach(player->{
+			UserDTO userDTO=new UserDTO();
+			userDTO.setId(player.getId());
+			userDTO.setLogin(player.getLogin());
+//			userDTO.setScore((Long)(player.getCards().stream().mapToInt(c->c.getFace().getPoint()).sum())));
+		});
+		return null;
 	}
 
 }
