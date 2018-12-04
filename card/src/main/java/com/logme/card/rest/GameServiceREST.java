@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.logme.card.dto.CardCountResultDTO;
 import com.logme.card.dto.PlayerResultDTO;
 import com.logme.card.dto.SuitCountDTO;
 import com.logme.card.entity.CardInfo;
@@ -114,6 +115,18 @@ public class GameServiceREST {
 		try {
 			gameService.getSuitCount(gameId);
 			return new ResponseEntity<>(gameService.getSuitCount(gameId).get(), HttpStatus.ACCEPTED);
+		} catch (final Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+
+	}
+
+	@RequestMapping(value = "/games/{gameId}/countcards", method = RequestMethod.GET)
+	public ResponseEntity<List<CardCountResultDTO>> getCardCountDTO(@PathVariable("gameId") final long gameId) {
+		try {
+			gameService.getSuitCount(gameId);
+			return new ResponseEntity<>(gameService.getCardCountDTO(gameId).get(), HttpStatus.ACCEPTED);
 		} catch (final Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);

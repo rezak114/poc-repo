@@ -90,20 +90,4 @@ public class Card {
 		this.decks = decks;
 	}
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		final Card other = (Card) obj;
-		if (face != other.face)
-			return false;
-		if (suit != other.suit)
-			return false;
-		return true;
-	}
-
 }

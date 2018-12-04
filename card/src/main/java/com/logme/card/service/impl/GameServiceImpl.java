@@ -10,6 +10,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.logme.card.dto.CardCountDTO;
+import com.logme.card.dto.CardCountResultDTO;
 import com.logme.card.dto.PlayerResultDTO;
 import com.logme.card.dto.SuitCountDTO;
 import com.logme.card.entity.Card;
@@ -125,6 +127,15 @@ public class GameServiceImpl implements GameService {
 		final SuitCountDTO siCountDTO = new SuitCountDTO();
 		game.getCards().forEach(c -> siCountDTO.increment(c.getSuit()));
 		return Optional.of(siCountDTO);
+	}
+
+	@Override
+	public Optional<List<CardCountResultDTO>> getCardCountDTO(final Long gameId) throws FunctionalException {
+		final Game game = gameRepository.findById(gameId)
+				.orElseThrow(() -> new FunctionalException("The game is not found gameID ={} ", gameId));
+		final CardCountDTO counter = new CardCountDTO();
+		game.getCards().forEach(c -> counter.increment(c));
+		return Optional.of(counter.getResultDesc());
 	}
 
 }

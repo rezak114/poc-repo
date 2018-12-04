@@ -4,7 +4,13 @@ used for poc projects
 #################################################################
 ######################## Project Card :########################
 #################################################################
+Prerequisites :
 
+JAVA 1.8
+MAVEN 3.3
+
+MAin class :
+CardApplication
 _______________________________
 1) Create game
 _______________________________
@@ -58,7 +64,8 @@ _______________________________
 GET localhost:8080/games/{gameId}/suit
 _______________________________
 9)Get the count of each card (suit and value) remaining in the game deck sorted by suit ( hearts, spades, clubs, and diamonds) and face value from high value to low value (King, Queen, Jack, 10….2, Ace with value of 1)
-_______________________________
+GET localhost:8080/games/53/countcards
+_____________________________
 10)Shuffle the game deck (shoe)
 Shuffle returns no value, but results in the cards in the game deck being randomly permuted. Please do not use library-provided “shuffle” operations to implement this function. You may use library- provided random number generators in your solution.
 Shuffle can be called at any time

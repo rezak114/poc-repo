@@ -3,6 +3,7 @@ package com.logme.card.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.logme.card.dto.CardCountResultDTO;
 import com.logme.card.dto.PlayerResultDTO;
 import com.logme.card.dto.SuitCountDTO;
 import com.logme.card.entity.CardInfo;
@@ -61,4 +62,16 @@ public interface GameService {
 	 * @throws FunctionalException
 	 */
 	Optional<SuitCountDTO> getSuitCount(Long gameId) throws FunctionalException;
+
+	/**
+	 * Get the count of each card (suit and value) remaining in the game deck sorted
+	 * by suit ( hearts, spades, clubs, and diamonds) and face value from high value
+	 * to low value (King, Queen, Jack, 10….2, Ace with value of 1)
+	 *
+	 * @param gameId the identifier of game.
+	 * @return
+	 * @throws FunctionalException
+	 */
+	Optional<List<CardCountResultDTO>> getCardCountDTO(Long gameId) throws FunctionalException;
+
 }
