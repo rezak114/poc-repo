@@ -29,7 +29,7 @@ public class Game {
 
 	@ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE, })
 	@JoinTable(name = "game_cards", joinColumns = @JoinColumn(name = "deck_id", nullable = false), inverseJoinColumns = @JoinColumn(name = "card_id", nullable = false))
-	private Set<Card> cards;
+	private List<Card> cards;
 
 	/**
 	 * This is not persisted.
@@ -89,14 +89,14 @@ public class Game {
 	/**
 	 * @return the cards
 	 */
-	public Set<Card> getCards() {
+	public List<Card> getCards() {
 		return cards;
 	}
 
 	/**
 	 * @param cards the cards to set
 	 */
-	public void setCards(final Set<Card> cards) {
+	public void setCards(final List<Card> cards) {
 		this.cards = cards;
 	}
 

@@ -22,17 +22,19 @@ public class CardCountDTO {
 	public void increment(final Card card) {
 		final CardCountResultDTO cardInfo = new CardCountResultDTO(card.getSuit(), card.getFace());
 		if (nbCards.get(cardInfo) == null) {
-			cardInfo.setNb(card.getFace().getPoint());
 			nbCards.put(cardInfo, card.getFace().getPoint());
 		} else {
 			final int total = nbCards.get(cardInfo) + card.getFace().getPoint();
-			cardInfo.setNb(total);
 			nbCards.put(cardInfo, total);
 		}
 	}
 
 	public List<CardCountResultDTO> getResultDesc() {
 		final List<CardCountResultDTO> result = new ArrayList(nbCards.keySet());
+		for (final Map.Entry<CardCountResultDTO, Integer> entry : nbCards.entrySet()) {
+			entry.getKey().setNb(entry.getValue());
+			result.add(entry.getKey());
+		}
 		result.sort(new Comparator<CardCountResultDTO>() {
 			@Override
 			public int compare(final CardCountResultDTO o1, final CardCountResultDTO o2) {

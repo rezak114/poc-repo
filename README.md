@@ -9,8 +9,10 @@ Prerequisites :
 JAVA 1.8
 MAVEN 3.3
 
-MAin class :
+Main class :
 CardApplication
+
+
 _______________________________
 1) Create game
 _______________________________
@@ -69,4 +71,5 @@ _____________________________
 10)Shuffle the game deck (shoe)
 Shuffle returns no value, but results in the cards in the game deck being randomly permuted. Please do not use library-provided “shuffle” operations to implement this function. You may use library- provided random number generators in your solution.
 Shuffle can be called at any time
+localhost:8080/games/53/shuffle
 _______________________________
